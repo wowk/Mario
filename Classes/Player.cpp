@@ -37,3 +37,8 @@ void Player::setActionStatus(Player::ActionStatus as)
 {
     actionStatus = as;
 }
+
+const Size Player::scaleSize() const
+{
+    return sprite->getContentSize() * sprite->getScale();
+}

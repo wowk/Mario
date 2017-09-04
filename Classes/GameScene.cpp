@@ -1,3 +1,4 @@
+#include "TmxMap.h"
 #include "GameScene.h"
 #include <typeinfo>
 #include <iostream>
@@ -28,12 +29,13 @@ bool GameScene::init()
 
     camera = Camera::createOrthographic(size.width, size.height, 0, 1);
     camera->setCameraFlag(CameraFlag::DEFAULT);
+    camera->setCameraMask(1);
     this->addChild(camera);
 
-    auto tmxMap = TMXTiledMap::create("firstMap.tmx");
+    tmxMap = TmxMap::create("firstMap.tmx");
     this->addChild(tmxMap);
     auto scaleFactor = size.height / tmxMap->getContentSize().height;
-    tmxMap->setScale(scaleFactor);
+    this->setScale(scaleFactor);
     tmxMap->setLocalZOrder(0);
 
     groundLayer = tmxMap->getObjectGroup("ground");
@@ -49,7 +51,7 @@ bool GameScene::init()
         phyBody->setContactTestBitmask(0x00000001);
         phyBody->setCategoryBitmask(0x00000001);
         auto ground = Node::create();
-        this->addChild(ground);
+        tmxMap->addChild(ground);
         ground->setPhysicsBody(phyBody);
         ground->setPosition(x + (w / 2), y + (h / 2));
         ground->setScale(scaleFactor);
@@ -57,8 +59,9 @@ bool GameScene::init()
     }
 
     player = Player::create();
-    player->setPosition(200,200);
+    player->setPosition(80,200);
     player->setLocalZOrder(10);
+    player->setCameraMask(1);
     this->addChild(player);
 
     camera->setPosition(200, 200);
@@ -84,9 +87,42 @@ bool GameScene::init()
 void GameScene::update(float delta)
 {
     if( keyMap[EventKeyboard::KeyCode::KEY_LEFT_ARROW] ){
-        player->setPositionX(-80 * delta + player->getPositionX());
+        auto vSize = Director::getInstance()->getVisibleSize();
+        if( tmxMap->isLeftEdgeArrived() ){
+            auto posX = player->getPositionX() - delta * 80;
+            auto playerWidth = player->scaleSize().width / 2;
+            if( posX < playerWidth ){
+                posX = playerWidth;
+            }
+            player->setPositionX(posX);
+        }else if( tmxMap->isRightEdgeArrived() ){
+            if( player->getPositionX() > vSize.width * 0.5 ){
+                player->setPositionX(player->getPositionX() - delta * 80);
+            }else{
+                tmxMap->moveHor(delta);
+            }
+        }else{
+            tmxMap->moveHor(delta);
+        }
     }else if( keyMap[EventKeyboard::KeyCode::KEY_RIGHT_ARROW] ){
-        player->setPositionX(80 * delta + player->getPositionX());
+        auto vSize = Director::getInstance()->getVisibleSize();
+
+        if( tmxMap->isRightEdgeArrived() ){
+            auto posX = player->getPositionX() + delta * 80;
+            auto playerWidth = player->scaleSize().width / 2;
+            if( posX > vSize.width - playerWidth){
+                posX = vSize.width - playerWidth;
+            }
+            player->setPositionX(posX);
+        }else if( tmxMap->isLeftEdgeArrived() ){
+            if( player->getPositionX() < vSize.width * 0.5 ){
+                player->setPositionX(player->getPositionX() + delta * 80);
+            }else{
+                tmxMap->moveHor(-delta);
+            }
+        }else{
+            tmxMap->moveHor(-delta);
+        }
     }
     if(keyMap[EventKeyboard::KeyCode::KEY_SPACE] ){
         player->jump(Vec2(0, 200));

@@ -12,6 +12,7 @@ public:
 public:
     void jump(const cocos2d::Vec2 &);
     void setActionStatus(ActionStatus);
+    const cocos2d::Size scaleSize() const;
 
 private:
     cocos2d::Sprite* sprite;

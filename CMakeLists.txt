@@ -130,6 +130,7 @@ set(GAME_SRC
   Classes/AppDelegate.cpp
   Classes/GameScene.cpp
   Classes/Player.cpp
+  Classes/TmxMap.cpp
   ${PLATFORM_SPECIFIC_SRC}
 )
 
@@ -137,6 +138,7 @@ set(GAME_HEADERS
   Classes/AppDelegate.h
   Classes/GameScene.h
   Classes/Player.h
+  Classes/TmxMap.h
   ${PLATFORM_SPECIFIC_HEADERS}
 )
 
