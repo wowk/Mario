@@ -2,6 +2,7 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
+#include "TmxMap.h"
 #include "Player.h"
 #include <map>
 
@@ -18,10 +19,11 @@ public:
     void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event);
 private:
     cocos2d::Camera* camera;
-    cocos2d::TMXTiledMap* tmxMap;
     cocos2d::TMXObjectGroup* groundLayer;
-    Player* player;
     std::map<cocos2d::EventKeyboard::KeyCode, bool> keyMap;
+
+    Player* player;
+    TmxMap* tmxMap;
 };
 
 #endif//__GAME_SCENE_H__
